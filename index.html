@@ -7,61 +7,80 @@
 <title>ちょっと見て！</title>
 <style>
 body {
-  margin: 0; min-height: 100vh;
-  display: grid; place-items: center;
-  background: #17172b; color: white;
-  font-family: sans-serif; text-align: center;
-  padding: 20px; box-sizing: border-box;
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #17172b;
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 main { width: 100%; max-width: 500px; }
 button {
-  border: 0; border-radius: 18px;
-  padding: 20px; width: 100%;
-  background: #ff4f81; color: white;
-  font-size: 22px; font-weight: bold;
+  border: 0;
+  border-radius: 18px;
+  padding: 20px;
+  width: 100%;
+  background: #ff4f81;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
 }
 #surprise { display: none; }
-#surprise.show { display: block; animation: pop .45s ease-out; }
-#surprise img {
-  width: 100%; max-height: 65vh;
-  object-fit: contain; border-radius: 16px;
-}
+#face { font-size: 100px; animation: pop .45s ease-out; }
+h1 { font-size: 32px; }
 @keyframes pop {
-  from { transform: scale(.1) rotate(-12deg); opacity: 0; }
-  to { transform: scale(1) rotate(0); opacity: 1; }
+  from { transform: scale(.1) rotate(-20deg); }
+  to { transform: scale(1) rotate(0); }
 }
 </style>
 </head>
 <body>
 <main>
-<section id="start">
-<h1>🎁 ちょっと見て！</h1>
-<p>絶対に押してね……😏</p>
-<button id="go">ここを押してね！！👇</button>
-</section>
-<section id="surprise">
-<h1>ドーーーン！！！🤣</h1>
-<img src="kao.jpg" alt="びっくり写真">
-<h1>ひっかかったね！！</h1>
-</section>
+  <section id="start">
+    <h1>ちょっと見て！</h1>
+    <p>何が出るかは押してからのお楽しみ…</p>
+    <button onclick="reveal()">ここを押してね 👆</button>
+  </section>
+  <section id="surprise">
+    <h1>ドーーーン！！！😂</h1>
+    <div id="face">🤪</div>
+    <p>ひっかかったね！！</p>
+    <button onclick="replay()">もう一回！</button>
+  </section>
 </main>
 <script>
-document.getElementById("go").onclick = () => {
- document.getElementById("start").style.display = "none";
- document.getElementById("surprise").classList.add("show");
- try {
-  const C = window.AudioContext || window.webkitAudioContext;
-  const c = new C(), o = c.createOscillator(), g = c.createGain();
-  o.type = "square";
-  o.frequency.setValueAtTime(660,c.currentTime);
-  o.frequency.exponentialRampToValueAtTime(180,c.currentTime+.35);
-  g.gain.setValueAtTime(.15,c.currentTime);
-  g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.4);
-  o.connect(g); g.connect(c.destination);
-  o.start(); o.stop(c.currentTime+.4);
-  o.onended = () => c.close();
- } catch(e) {}
-};
+function reveal() {
+  document.getElementById('start').style.display = 'none';
+  document.getElementById('surprise').style.display = 'block';
+  document.getElementById('face').style.animation = 'none';
+  void document.getElementById('face').offsetWidth;
+  document.getElementById('face').style.animation = 'pop .45s ease-out';
+  try {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (C) {
+      const ctx = new C();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(650, ctx.currentTime + .18);
+      gain.gain.setValueAtTime(.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.01, ctx.currentTime + .4);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + .4);
+    }
+  } catch(e) {}
+}
+function replay() {
+  document.getElementById('surprise').style.display = 'none';
+  document.getElementById('start').style.display = 'block';
+}
 </script>
 </body>
 </html>

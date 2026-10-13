@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ちょっと見て！</title>
+<style>
+body {
+  margin: 0; min-height: 100vh;
+  display: grid; place-items: center;
+  background: #17172b; color: white;
+  font-family: sans-serif; text-align: center;
+  padding: 20px; box-sizing: border-box;
+}
+main { width: 100%; max-width: 500px; }
+button {
+  border: 0; border-radius: 18px;
+  padding: 20px; width: 100%;
+  background: #ff4f81; color: white;
+  font-size: 22px; font-weight: bold;
+}
+#surprise { display: none; }
+#surprise.show { display: block; animation: pop .45s ease-out; }
+#surprise img {
+  width: 100%; max-height: 65vh;
+  object-fit: contain; border-radius: 16px;
+}
+@keyframes pop {
+  from { transform: scale(.1) rotate(-12deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+</style>
+</head>
+<body>
+<main>
+<section id="start">
+<h1>🎁 ちょっと見て！</h1>
+<p>絶対に押してね……😏</p>
+<button id="go">ここを押してね！！👇</button>
+</section>
+<section id="surprise">
+<h1>ドーーーン！！！🤣</h1>
+<img src="kao.jpg" alt="びっくり写真">
+<h1>ひっかかったね！！</h1>
+</section>
+</main>
+<script>
+document.getElementById("go").onclick = () => {
+ document.getElementById("start").style.display = "none";
+ document.getElementById("surprise").classList.add("show");
+ try {
+  const C = window.AudioContext || window.webkitAudioContext;
+  const c = new C(), o = c.createOscillator(), g = c.createGain();
+  o.type = "square";
+  o.frequency.setValueAtTime(660,c.currentTime);
+  o.frequency.exponentialRampToValueAtTime(180,c.currentTime+.35);
+  g.gain.setValueAtTime(.15,c.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.4);
+  o.connect(g); g.connect(c.destination);
+  o.start(); o.stop(c.currentTime+.4);
+  o.onended = () => c.close();
+ } catch(e) {}
+};
+</script>
+</body>
+</html>
